@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import *
-import os, cv2
+import os
+import cv2
 import shutil
 import csv
 import numpy as np
@@ -11,16 +12,11 @@ import time
 import tkinter.font as font
 import pyttsx3
 
-# project module
+# Project modules
 import show_attendance
 import takeImage
 import trainImage
 import automaticAttedance
-
-# engine = pyttsx3.init()
-# engine.say("Welcome!")
-# engine.say("Please browse through your options..")
-# engine.runAndWait()
 
 
 def text_to_speech(user_text):
@@ -29,18 +25,18 @@ def text_to_speech(user_text):
     engine.runAndWait()
 
 
-haarcasecade_path = "haarcascade_frontalface_default.xml"
-trainimagelabel_path = (
-    "/TrainingImageLabel/Trainner.yml"
+haarcasecade_path = os.path.abspath("haarcascade_frontalface_default.xml")
+trainimagelabel_path = os.path.abspath(
+    r"C:\Users\Mridul Kalra\Downloads\Attendance-Management-system-using-face-recognition\TrainingImageLabel\Trainner.yaml"
 )
-trainimage_path = "TrainingImage"
+trainimage_path = os.path.abspath("TrainingImage")
 if not os.path.exists(trainimage_path):
     os.makedirs(trainimage_path)
 
-studentdetail_path = (
-    "/StudentDetails/studentdetails.csv"
-)
-attendance_path = "Attendance"
+studentdetail_path = os.path.abspath(r"C:\Users\Mridul Kalra\Downloads\Attendance-Management-system-using-face-recognition\StudentDetails\studentdetails.csv")
+attendance_path = os.path.abspath(r"C:\Users\Mridul Kalra\Downloads\Attendance-Management-system-using-face-recognition\Attendance")
+if not os.path.exists(attendance_path):
+    os.makedirs(attendance_path)
 
 
 window = Tk()
@@ -51,17 +47,16 @@ dialog_text = "Are you sure want to close?"
 window.configure(background="black")
 
 
-# to destroy screen
+# To destroy error screen
 def del_sc1():
     sc1.destroy()
 
 
-# error message for name and no
+# Error message for missing name or number
 def err_screen():
     global sc1
     sc1 = tk.Tk()
     sc1.geometry("400x110")
-    sc1.iconbitmap("AMS.ico")
     sc1.title("Warning!!")
     sc1.configure(background="black")
     sc1.resizable(0, 0)
@@ -85,19 +80,21 @@ def err_screen():
     ).place(x=110, y=50)
 
 
+# Validate numeric input
 def testVal(inStr, acttyp):
-    if acttyp == "1":  # insert
+    if acttyp == "1":  # Insert
         if not inStr.isdigit():
             return False
     return True
 
 
-logo = Image.open("UI_Image/0001.png")
-logo = logo.resize((50, 47), Image.Resampling.LANCZOS)
+logo_path = os.path.abspath(r"C:\Users\Mridul Kalra\Downloads\Attendance-Management-system-using-face-recognition\UI_Image\0001.png")
+logo = Image.open(logo_path).resize((50, 47), Image.Resampling.LANCZOS)
 logo1 = ImageTk.PhotoImage(logo)
+
 titl = tk.Label(window, bg="black", relief=RIDGE, bd=10, font=("arial", 35))
 titl.pack(fill=X)
-l1 = tk.Label(window, image=logo1, bg="black",)
+l1 = tk.Label(window, image=logo1, bg="black")
 l1.place(x=470, y=10)
 
 titl = tk.Label(
@@ -115,40 +112,45 @@ a = tk.Label(
 )
 a.pack()
 
-ri = Image.open("UI_Image/register.png")
+ri_path = os.path.abspath(r"C:\Users\Mridul Kalra\Downloads\Attendance-Management-system-using-face-recognition\UI_Image\register.png")
+ai_path = os.path.abspath(r"C:\Users\Mridul Kalra\Downloads\Attendance-Management-system-using-face-recognition\UI_Image\attendance.png")
+vi_path = os.path.abspath(r"C:\Users\Mridul Kalra\Downloads\Attendance-Management-system-using-face-recognition\UI_Image\verifyy.png")
+
+ri = Image.open(ri_path)
 r = ImageTk.PhotoImage(ri)
 label1 = Label(window, image=r)
 label1.image = r
 label1.place(x=100, y=270)
 
-ai = Image.open("UI_Image/attendance.png")
+ai = Image.open(ai_path)
 a = ImageTk.PhotoImage(ai)
 label2 = Label(window, image=a)
 label2.image = a
 label2.place(x=980, y=270)
 
-vi = Image.open("UI_Image/verifyy.png")
+vi = Image.open(vi_path)
 v = ImageTk.PhotoImage(vi)
 label3 = Label(window, image=v)
 label3.image = v
 label3.place(x=600, y=270)
 
 
+# Function to handle the "Take Image" UI
 def TakeImageUI():
     ImageUI = Tk()
     ImageUI.title("Take Student Image..")
     ImageUI.geometry("780x480")
     ImageUI.configure(background="black")
     ImageUI.resizable(0, 0)
+
     titl = tk.Label(ImageUI, bg="black", relief=RIDGE, bd=10, font=("arial", 35))
     titl.pack(fill=X)
-    # image and title
+
     titl = tk.Label(
         ImageUI, text="Register Your Face", bg="black", fg="green", font=("arial", 30),
     )
     titl.place(x=270, y=12)
 
-    # heading
     a = tk.Label(
         ImageUI,
         text="Enter the details",
@@ -159,7 +161,6 @@ def TakeImageUI():
     )
     a.place(x=280, y=75)
 
-    # ER no
     lbl1 = tk.Label(
         ImageUI,
         text="Enrollment No",
@@ -185,7 +186,6 @@ def TakeImageUI():
     txt1.place(x=250, y=130)
     txt1["validatecommand"] = (txt1.register(testVal), "%P", "%d")
 
-    # name
     lbl2 = tk.Label(
         ImageUI,
         text="Name",
@@ -250,8 +250,6 @@ def TakeImageUI():
         txt1.delete(0, "end")
         txt2.delete(0, "end")
 
-    # take Image button
-    # image
     takeImg = tk.Button(
         ImageUI,
         text="Take Image",
@@ -275,7 +273,6 @@ def TakeImageUI():
             text_to_speech,
         )
 
-    # train Image function call
     trainImg = tk.Button(
         ImageUI,
         text="Train Image",
@@ -339,11 +336,13 @@ r = tk.Button(
     width=17,
 )
 r.place(x=1000, y=520)
+
 r = tk.Button(
     window,
     text="EXIT",
     bd=10,
     command=quit,
+
     font=("times new roman", 16),
     bg="black",
     fg="yellow",

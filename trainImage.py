@@ -35,4 +35,4 @@ def getImagesAndLables(path):
         Id = int(os.path.split(imagePath)[-1].split("_")[1])
         faces.append(imageNp)
         Ids.append(Id)
-    return faces, Ids
+    return faces,Ids
